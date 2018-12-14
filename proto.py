@@ -1,24 +1,20 @@
+#!/usr/bin/env python3
+
 from http.server import HTTPServer, SimpleHTTPRequestHandler, BaseHTTPRequestHandler
-
 from io import BytesIO
-
 from urllib.parse import urlparse
 
 
-dir(SimpleHTTPRequestHandler)
-
 class TarHTTP(SimpleHTTPRequestHandler):
 
-	def foo(self):
-		print("DDDD")
 
 	def do_GET(self):
-		print("FFFFF")
+		print("in do_GET")
 		print(dir(self))
 		print("XXX",self.requestline)
 		args = urlparse(self.requestline).query.split(" ")[0]
 		if "dl=tar" in args:
-			print("!!!!!!!")
+			print("Found 'dl=tar' in args")
 			ffff = open("/tmp/out")
 			self.copyfile(ffff, self.wfile)
 		else:
@@ -27,7 +23,7 @@ class TarHTTP(SimpleHTTPRequestHandler):
 
 
 	def really_do_GET(self):
-		print("TTTTTTT")
+		print("in really_do_GET")
 		f = self.send_head()
 		if f:
 			try:
