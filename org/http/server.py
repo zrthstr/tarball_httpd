@@ -647,7 +647,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Serve a GET request."""
-        print("TTTTTTT")
         f = self.send_head()
         if f:
             try:
