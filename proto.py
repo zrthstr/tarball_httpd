@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+""" this aproch is suboptimal as seting conten lenght later woul require a nasty hack
+"""
+
 from http.server import HTTPServer, SimpleHTTPRequestHandler, BaseHTTPRequestHandler
 from io import BytesIO
 import io
+import re
 from urllib.parse import urlparse
 
 
@@ -40,8 +44,13 @@ class TarHTTP(SimpleHTTPRequestHandler):
         #print("--headers--\n", self.headers, "\n--end-headdes--",sep="")
 
     def mod_line(self, line):
-        #if line stats_with()
-        print("line:", line)
+        if line.startswith('<li><a href="') and line.endswith('</a></li>'):
+            ## looks like a file listing line
+            name = re.sub('"', '', re.search('".*"',line).group(0))
+            if name.endswith('/'):
+                ## is dir
+                tarname = name[:-1] + '.tar'
+                line = '<li><a href="{0}">{0}</a>  <a href="{1}?dl=tar">(tar)</a>  </li>'.format(name, tarname)
         return line
 
     def add_tar(self, html):
