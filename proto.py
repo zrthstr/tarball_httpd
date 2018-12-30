@@ -2,6 +2,7 @@
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler, BaseHTTPRequestHandler
 from io import BytesIO
+import io
 from urllib.parse import urlparse
 
 
@@ -38,10 +39,28 @@ class TarHTTP(SimpleHTTPRequestHandler):
 
         #print("--headers--\n", self.headers, "\n--end-headdes--",sep="")
 
+    def mod_line(self, line):
+        #if line stats_with()
+        print("line:", line)
+        return line
+
+    def add_tar(self, html):
+        html = html.getvalue().decode('UTF-8')
+
+        html = [self.mod_line(l) for l in html.split('\n')]
+        html = "\n".join(html)
+        html = io.BytesIO(bytes( html, 'utf-8'))
+
+        #print(html.read())
+        return html
+
+
     def list_directory(self, path):
         print("AA" * 40)
-        return super().list_directory(path)
+        f = super().list_directory(path)
         #super().list_directory(path)
+        #return f
+        return self.add_tar(f)
 
 
 httpd = HTTPServer(('localhost', 8000), TarHTTP)
