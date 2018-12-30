@@ -53,12 +53,21 @@ class tarHTTPd(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         """Serve a GET request."""
-        f = self.send_head()
-        if f:
-            try:
-                self.copyfile(f, self.wfile)
-            finally:
-                f.close()
+        args = urlparse(self.requestline).query.split(" ")[0]
+        if "dl=tar" in args:
+            print("TTTAAARRR")
+            print(dir(self))
+            f = self.send_head(is_tar=True)            
+
+        else:
+            print("nottt tttar")
+
+            f = self.send_head()
+            if f:
+                try:
+                    self.copyfile(f, self.wfile)
+                finally:
+                    f.close()
 
     def do_HEAD(self):
         """Serve a HEAD request."""
@@ -66,7 +75,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
         if f:
             f.close()
 
-    def send_head(self):
+    def send_head(self, is_tar=False):
         """Common code for GET and HEAD commands.
 
         This sends the response code and MIME headers.
@@ -191,7 +200,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
 
                 r.append('<li><a href="%s">%s</a>   <a href="%s">(tar)</a>  </li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False), tarname_secure ))
 
-#### TODO: figure out what to do with links, and links to dirs
+#### TODO: figure out what to do with symlinks to files, and symlinks to dirs
 #            if os.path.islink(fullname):
 #                displayname = name + "@"
 #                # Note: a link to a directory displays with @ and links with /
