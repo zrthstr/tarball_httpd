@@ -1,34 +1,23 @@
 #!/usr/bin/env python3
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler
-from io import BytesIO
 import re
-from urllib.parse import urlparse
+#from urllib.parse import urlparse
 
 import tarfile
-import copy
 import datetime
 import email.utils
 import html
-import http.client
 import io
-import mimetypes
 import os
-import posixpath
-#import select
-import shutil
-#import socket # For gethostbyaddr()
-#import socketserver
 import sys
-#import time
 import urllib.parse
-#from functools import partial
 
 from http import HTTPStatus
 
-__version__ = "test"
+__version__ = "0.1"
 
-class tarHTTPd(SimpleHTTPRequestHandler):
+class TarHTTPd(SimpleHTTPRequestHandler):
 
     """Simple HTTP request handler with GET and HEAD commands.
 
@@ -52,18 +41,15 @@ class tarHTTPd(SimpleHTTPRequestHandler):
     def do_GET(self):
         """Serve a GET request."""
 
-        ### replace this with parts = urllib.parse.urlsplit(self.path) 
-        args = urlparse(self.requestline).query.split(" ")[0]
+        args = urllib.parse.urlparse(self.requestline).query
 
         if "dl=tar" in args:
-            print("TTTAAARRR")
             self.do_GET_TAR()
         else:
-            print("SUPER()")
             super().do_GET()
 
     def do_GET_TAR(self):
-        #t = tarfile.open(name="foooo.tar", mode='w', fileobj=self.wfile, debug=3 )
+        """ send 'virtual' tar file to pipe and copy to socket """
 
         path = self.translate_path(self.path)
         path = re.sub('\.tar$', '', path)
@@ -76,7 +62,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
             self.send_header("Content-type", 'application/x-tar')
             #self.send_header("Content-Lenght", '56620')
             self.send_header("Content-Lenght", '620')
-            self.send_header("Last-Modified", 'Fri, 14 Dec 2018 07:24:02 GMT')
+            #self.send_header("Last-Modified", 'Fri, 14 Dec 2018 07:24:02 GMT')
             self.end_headers()
             sample = '/home/zrth/test/tarHTTPd/test.tar'
             #f = open(sample,'rb')
@@ -99,14 +85,12 @@ class tarHTTPd(SimpleHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
             return None
         
-
-
-    def do_HEAD(self):
-        """Serve a HEAD request."""
-        f = self.send_head()
-        if f:
-            f.close()
-
+#    def do_HEAD(self):
+#        """Serve a HEAD request."""
+#        f = self.send_head()
+#        if f:
+#            f.close()
+#
     def send_head(self ):
         """Common code for GET and HEAD commands.
 
@@ -230,7 +214,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
                 tarname = name + ".tar"
                 tarname_secure = urllib.parse.quote(tarname, errors='surrogatepass') + "?dl=tar" 
 
-                r.append('<li><a href="%s">%s</a>   <a href="%s">(tar)</a>  </li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False), tarname_secure ))
+                r.append('<li><a href="%s">%s</a>   <a href="%s">(tar)</a>  </li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False), tarname_secure))
 
 #### TODO: figure out what to do with symlinks to files, and symlinks to dirs
 #            if os.path.islink(fullname):
@@ -250,88 +234,9 @@ class tarHTTPd(SimpleHTTPRequestHandler):
         self.end_headers()
         return f
 
-    def translate_path_XXX(self, path):
-        """Translate a /-separated PATH to the local filename syntax.
-
-        Components that mean special things to the local file system
-        (e.g. drive or directory names) are ignored.  (XXX They should
-        probably be diagnosed.)
-
-        """
-        # abandon query parameters
-        path = path.split('?',1)[0]
-        path = path.split('#',1)[0]
-        # Don't forget explicit trailing slash when normalizing. Issue17324
-        trailing_slash = path.rstrip().endswith('/')
-        try:
-            path = urllib.parse.unquote(path, errors='surrogatepass')
-        except UnicodeDecodeError:
-            path = urllib.parse.unquote(path)
-        path = posixpath.normpath(path)
-        words = path.split('/')
-        words = filter(None, words)
-        path = self.directory
-        for word in words:
-            if os.path.dirname(word) or word in (os.curdir, os.pardir):
-                # Ignore components that are not a simple file/directory name
-                continue
-            path = os.path.join(path, word)
-        if trailing_slash:
-            path += '/'
-        return path
-
-    def copyfile_XXX(self, source, outputfile):
-        """Copy all data between two file objects.
-
-        The SOURCE argument is a file object open for reading
-        (or anything with a read() method) and the DESTINATION
-        argument is a file object open for writing (or
-        anything with a write() method).
-
-        The only reason for overriding this would be to change
-        the block size or perhaps to replace newlines by CRLF
-        -- note however that this the default server uses this
-        to copy binary data as well.
-
-        """
-        shutil.copyfileobj(source, outputfile)
-
-    def guess_type_XXX(self, path):
-        """Guess the type of a file.
-
-        Argument is a PATH (a filename).
-
-        Return value is a string of the form type/subtype,
-        usable for a MIME Content-type header.
-
-        The default implementation looks the file's extension
-        up in the table self.extensions_map, using application/octet-stream
-        as a default; however it would be permissible (if
-        slow) to look inside the data to make a better guess.
-
-        """
-
-        base, ext = posixpath.splitext(path)
-        if ext in self.extensions_map:
-            return self.extensions_map[ext]
-        ext = ext.lower()
-        if ext in self.extensions_map:
-            return self.extensions_map[ext]
-        else:
-            return self.extensions_map['']
-
-    if not mimetypes.inited:
-        mimetypes.init() # try to read system mime.types
-    extensions_map = mimetypes.types_map.copy()
-    extensions_map.update({
-        '': 'application/octet-stream', # Default
-        '.py': 'text/plain',
-        '.c': 'text/plain',
-        '.h': 'text/plain',
-        })
 
 
 if __name__ == "__main__":
-    httpd = HTTPServer(('localhost', 8000), tarHTTPd)
+    httpd = HTTPServer(('localhost', 8000), TarHTTPd)
     httpd.serve_forever()
 
