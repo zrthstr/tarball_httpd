@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-#from http.server import HTTPServer, SimpleHTTPRequestHandler, BaseHTTPRequestHandler
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from io import BytesIO
 import re
 from urllib.parse import urlparse
 
+import tarfile
 import copy
 import datetime
 import email.utils
@@ -27,8 +27,6 @@ import urllib.parse
 from http import HTTPStatus
 
 __version__ = "test"
-
-### class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 class tarHTTPd(SimpleHTTPRequestHandler):
 
@@ -84,7 +82,6 @@ class tarHTTPd(SimpleHTTPRequestHandler):
             #f = open(sample,'rb')
             #print(dir(f))
             #print(type(f))
-            import tarfile
             some_file = '/home/zrth/test/tarHTTPd/README.md'
 
             pr, pw = os.pipe()
@@ -94,13 +91,9 @@ class tarHTTPd(SimpleHTTPRequestHandler):
             with tarfile.open(name="hooks.tar", mode="w|", fileobj=ppw, encoding='utf-8') as out:
                 out.add(some_file)
 
-            #t.add(some_file)
-                #ppw.close()
-                #os.close(pr)
-            print("bXXXXXx")
+            os.close(pw)
             self.copyfile(ppr, self.wfile)
-            print("aXXXXXx")
-            #pp.close()
+            os.close(pr)
 
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
@@ -114,7 +107,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
         if f:
             f.close()
 
-    def send_head(self, is_tar=False):
+    def send_head(self ):
         """Common code for GET and HEAD commands.
 
         This sends the response code and MIME headers.
@@ -257,7 +250,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
         self.end_headers()
         return f
 
-    def translate_path(self, path):
+    def translate_path_XXX(self, path):
         """Translate a /-separated PATH to the local filename syntax.
 
         Components that mean special things to the local file system
@@ -287,7 +280,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
             path += '/'
         return path
 
-    def copyfile(self, source, outputfile):
+    def copyfile_XXX(self, source, outputfile):
         """Copy all data between two file objects.
 
         The SOURCE argument is a file object open for reading
@@ -303,7 +296,7 @@ class tarHTTPd(SimpleHTTPRequestHandler):
         """
         shutil.copyfileobj(source, outputfile)
 
-    def guess_type(self, path):
+    def guess_type_XXX(self, path):
         """Guess the type of a file.
 
         Argument is a PATH (a filename).
