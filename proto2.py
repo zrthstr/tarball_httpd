@@ -76,12 +76,31 @@ class tarHTTPd(SimpleHTTPRequestHandler):
             print("is_dir:", path)
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-type", 'application/x-tar')
-            self.send_header("Content-Lenght", '56620')
+            #self.send_header("Content-Lenght", '56620')
+            self.send_header("Content-Lenght", '620')
             self.send_header("Last-Modified", 'Fri, 14 Dec 2018 07:24:02 GMT')
             self.end_headers()
             sample = '/home/zrth/test/tarHTTPd/test.tar'
-            f = open(sample,'rb')
-            self.copyfile(f, self.wfile)
+            #f = open(sample,'rb')
+            #print(dir(f))
+            #print(type(f))
+            import tarfile
+            some_file = '/home/zrth/test/tarHTTPd/README.md'
+
+            pr, pw = os.pipe()
+            ppr  = os.fdopen(pr, 'rb')
+            ppw  = os.fdopen(pw, 'wb')
+
+            with tarfile.open(name="hooks.tar", mode="w|", fileobj=ppw, encoding='utf-8') as out:
+                out.add(some_file)
+
+            #t.add(some_file)
+                #ppw.close()
+                #os.close(pr)
+            print("bXXXXXx")
+            self.copyfile(ppr, self.wfile)
+            print("aXXXXXx")
+            #pp.close()
 
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
