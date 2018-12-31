@@ -53,21 +53,41 @@ class tarHTTPd(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         """Serve a GET request."""
+
+        ### replace this with parts = urllib.parse.urlsplit(self.path) 
         args = urlparse(self.requestline).query.split(" ")[0]
+
         if "dl=tar" in args:
             print("TTTAAARRR")
-            print(dir(self))
-            f = self.send_head(is_tar=True)            
+            self.do_GET_TAR()
+        else:
+            print("SUPER()")
+            super().do_GET()
+
+    def do_GET_TAR(self):
+        #t = tarfile.open(name="foooo.tar", mode='w', fileobj=self.wfile, debug=3 )
+
+        path = self.translate_path(self.path)
+        path = re.sub('\.tar$', '', path)
+        parts = urllib.parse.urlsplit(self.path)
+        print(parts)
+
+        if os.path.isdir(path):
+            print("is_dir:", path)
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-type", 'application/x-tar')
+            self.send_header("Content-Lenght", '56620')
+            self.send_header("Last-Modified", 'Fri, 14 Dec 2018 07:24:02 GMT')
+            self.end_headers()
+            sample = '/home/zrth/test/tarHTTPd/test.tar'
+            f = open(sample,'rb')
+            self.copyfile(f, self.wfile)
 
         else:
-            print("nottt tttar")
+            self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
+            return None
+        
 
-            f = self.send_head()
-            if f:
-                try:
-                    self.copyfile(f, self.wfile)
-                finally:
-                    f.close()
 
     def do_HEAD(self):
         """Serve a HEAD request."""
