@@ -1,6 +1,7 @@
 # tarHTTPd
 tarHTTPd extends pythons http.server to serve directroys as tarballs without creating the tarball in memory.
 
+
 ### who this should look
 ```
 %  curl -v  localhost:8000/test.tar -o /dev/null  
