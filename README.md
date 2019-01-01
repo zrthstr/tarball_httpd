@@ -1,6 +1,6 @@
-# TarHTTPServer
+# tarball_httpd
 
-* TarHTTPServer extends pythons http.server to serve directroys as tarballs.
+* tarball_httpd extends pythons http.server to serve directroys as tarballs.
 * the goal is to do this without creating the tarball in memory.
 * as much code as possible has been taken from python3's `org/http/server.py`
 
@@ -20,23 +20,23 @@
 
 # future
 ### install
-`% pip install TarHTTPServer`
+`% pip install tarball_httpd`
 
 ### usage
 ```
-% python -m TarHTTPServer
+% python -m tarball_httpd
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 ```
 
 ```
 # set port
-% python -m TarHTTPServer 12345
+% python -m tarball_httpd 12345
 Serving HTTP on 0.0.0.0 port 12345 (http://0.0.0.0:12345/) ...
 ```
 
 ```
 # set bind addr and port
-% python -m TarHTTPServer --bind 127.0.0.1
+% python -m tarball_httpd --bind 127.0.0.1
 Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...
 ```
 
