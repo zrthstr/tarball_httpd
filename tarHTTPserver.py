@@ -1,9 +1,25 @@
 #!/usr/bin/env python3
+""" Tar HTTP server class.
+
+SECURITY WARNING: DON'T USE THIS CODE UNLESS YOU ARE INSIDE A FIREWALL
+-- it has not been checked thourouly for seurity vulnerabilitys.
+
+Note: See /usr/lib/python3.7/http/server.py; Some of this code has been copyed and modified.
+
+XXX To do:
+
+- add tests
+- more testing
+- more logging
+- check for xxs, unexpected symlink behaviour
+- make sure big tar files are not built in memory but streamed
+- add support for zip, noncmpressed zip, and tar.gz
+
+"""
+
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import re
-#from urllib.parse import urlparse
-
 import tarfile
 import datetime
 import email.utils
@@ -19,9 +35,9 @@ __version__ = "0.1"
 
 class TarHTTPd(SimpleHTTPRequestHandler):
 
-    """Simple HTTP request handler with GET and HEAD commands.
+    """Tar HTTP request handler with GET and HEAD commands.
 
-    This serves files from the current directory and any of its
+    This serves dircetorys as tars and files from the current directory and any of its
     subdirectories.  The MIME type for files is determined by
     calling the .guess_type() method.
 
@@ -32,32 +48,22 @@ class TarHTTPd(SimpleHTTPRequestHandler):
 
     server_version = "SimpleHTTP/" + __version__
 
-#    def __init__(self, *args, directory=None, **kwargs):
-#        if directory is None:
-#            directory = os.getcwd()
-#        self.directory = directory
-#        super().__init__(*args, **kwargs)
-
     def do_GET(self):
         """Serve a GET request."""
 
         args = urllib.parse.urlparse(self.requestline).query
-
         if "dl=tar" in args:
-            self.do_GET_TAR()
+            self.do_TAR()
         else:
             super().do_GET()
 
-    def do_GET_TAR(self):
+
+    def do_TAR(self):
         """ Server 'virtual' tar file. Pipe to socket. """
 
         self.full_tar_name = self.translate_path(self.path)
         self.out_tar_name = os.path.split(self.full_tar_name)[-1]
         self.full_chosen_dir = re.sub('\.tar$', '', self.full_tar_name)
-
-        print("self.full_tar_name", self.full_tar_name)
-        print("self.out_tar_name", self.out_tar_name)
-        print("self.full_chosen_dir",self.full_chosen_dir)
 
         if os.path.isdir(self.full_chosen_dir):
             self.send_response(HTTPStatus.OK)
@@ -65,23 +71,24 @@ class TarHTTPd(SimpleHTTPRequestHandler):
             #self.send_header("Content-Lenght", '620')
             self.end_headers()
 
-            pr, pw = os.pipe()
-            ppr = os.fdopen(pr, 'rb')
-            ppw = os.fdopen(pw, 'wb')
+            fh_r, fh_w = os.pipe()
+            pipe_r = os.fdopen(fh_r, 'rb')
+            pipe_w = os.fdopen(fh_w, 'wb')
 
-            with tarfile.open(name=self.out_tar_name, mode="w|", fileobj=ppw, encoding='utf-8') as out:
+            with tarfile.open(name=self.out_tar_name, mode="w|",
+                              fileobj=pipe_w, encoding='utf-8') as out:
                 out.add(self.full_chosen_dir)
 
-            os.close(pw)
-            self.copyfile(ppr, self.wfile)
-            os.close(pr)
+            os.close(fh_w)
+            self.copyfile(pipe_r, self.wfile)
+            os.close(fh_r)
 
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
-            return None
-    
-    
-    def send_head(self ):
+            #return None
+
+
+    def send_head(self):
         """Common code for GET and HEAD commands.
 
         This sends the response code and MIME headers.
@@ -152,8 +159,7 @@ class TarHTTPd(SimpleHTTPRequestHandler):
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-type", ctype)
             self.send_header("Content-Length", str(fs[6]))
-            self.send_header("Last-Modified",
-                self.date_time_string(fs.st_mtime))
+            self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
             self.end_headers()
             return f
         except:
@@ -202,16 +208,17 @@ class TarHTTPd(SimpleHTTPRequestHandler):
                 displayname = name + "/"
                 linkname = name + "/"
                 tarname = name + ".tar"
-                tarname_secure = urllib.parse.quote(tarname, errors='surrogatepass') + "?dl=tar" 
-
-                r.append('<li><a href="%s">%s</a>   <a href="%s">(tar)</a>  </li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False), tarname_secure))
+                tarname_secure = urllib.parse.quote(tarname, errors='surrogatepass') + "?dl=tar"
+                r.append('<li><a href="%s">%s</a> <a href="%s"><h5 style="display:inline">(tar)</h5></a></li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False), tarname_secure))
 
 #### TODO: figure out what to do with symlinks to files, and symlinks to dirs
 #            if os.path.islink(fullname):
 #                displayname = name + "@"
 #                # Note: a link to a directory displays with @ and links with /
             else:
-                r.append('<li><a href="%s">%s</a></li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False)))
+                r.append('<li><a href="%s">%s</a></li>' %
+                         (urllib.parse.quote(linkname, errors='surrogatepass'),
+                          html.escape(displayname, quote=False)))
 
         r.append('</ul>\n<hr>\n</body>\n</html>\n')
         encoded = '\n'.join(r).encode(enc, 'surrogateescape')
@@ -227,6 +234,19 @@ class TarHTTPd(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    httpd = HTTPServer(('localhost', 8000), TarHTTPd)
-    httpd.serve_forever()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--bind', '-b', default='', metavar='ADDRESS',
+                        help='Specify alternate bind address '
+                             '[default: all interfaces]')
+    #parser.add_argument('--directory', '-d', default=os.getcwd(),
+    #                    help='Specify alternative directory '
+    #                    '[default:current directory]')
+    parser.add_argument('port', action='store',
+                        default=8000, type=int,
+                        nargs='?',
+                        help='Specify alternate port [default: 8000]')
+    args = parser.parse_args()
 
+    httpd = HTTPServer((args.bind, args.port), TarHTTPd)
+    httpd.serve_forever()
