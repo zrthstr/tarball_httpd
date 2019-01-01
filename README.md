@@ -4,7 +4,11 @@
 * the goal is to do this without creating the tarball in memory.
 * as much code as possible has been taken from python3's `org/http/server.py`
 
-### Todo:
+## Todo:
+### fix bug:
+*sometimes DL hangs. Is this a race condition between the pipe beeing closed and the filecopy??
+
+### general:
 * integrate in https://test.pypi.org/
 * more fixing
 * integrate in https://pypi.org/
@@ -27,14 +31,24 @@ Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 ```
 
 ```
-# set port
-% python -m tarball_httpd 12345
-Serving HTTP on 0.0.0.0 port 12345 (http://0.0.0.0:12345/) ...
+% python -m tarball_httpd 12345 --bind 127.0.0.1 --directory /tmp
+Serving HTTP on 127.0.0.1 port 12345 (http://127.0.0.1:12345/) ..
 ```
 
 ```
-# set bind addr and port
-% python -m tarball_httpd --bind 127.0.0.1
-Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...
+% python -m tarball_httpd 12345 -h                               
+usage: __main__.py [-h] [--bind ADDRESS] [--directory DIRECTORY] [port]
+
+positional arguments:
+  port                  Specify alternate port [default: 8000]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --bind ADDRESS, -b ADDRESS
+                        Specify alternate bind address [default: all
+                        interfaces]
+  --directory DIRECTORY, -d DIRECTORY
+                        Specify alternative directory [default:current
+                        directory
 ```
 

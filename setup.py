@@ -5,10 +5,10 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='tarball_httpd',
-    version='0.0.1',
-    description='serves dirs as tarballs over http',
-    author='zrthstr'
-    author_email='zrth1k@gmail.com'
+    version='0.0.dev3',
+    description='http server based on htto.server allowing directorys to be downloaded as tarballs',
+    author='zrthstr',
+    author_email='zrth1k@gmail.com',
     url='https://github.com/zrth1k/tarball_httpd',
     packages=setuptools.find_packages(),
     license='PSFL',
