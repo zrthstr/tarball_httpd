@@ -1,8 +1,47 @@
 # tarHTTPd
-* tarHTTPd extends pythons http.server to serve directroys as tarballs without creating the tarball in memory.
+
+* tarHTTPd extends pythons http.server to serve directroys as tarballs.
+* the goal is to do this without creating the tarball in memory.
 * as much code as possible has been taken from python3's `org/http/server.py`
 
+### Todo:
+* make this a python module
+* integrate in https://test.pypi.org/
+* more fixing
+* integrate in https://pypi.org/
+* add option to tar '.' and name correctly
+* check if archive is created in memory or streamed
+* add more supported archive files: zip, non compressed zip, gz/gz2
+* fix symlink hack
+* fix dir listing name in html page
+* add dir paramters
+* test, test, test
+* make pip package
+
+# future
+### install
+`% pip install tarHTTPserver`
+
+### usage
+`% python -m tarHTTPserver`
+
+```
+# set port
+% python -m tarHTTPserver 8080
+```
+
+```
+# set bind addr and port
+% python -m tarHTTPserver --bind 127.0.0.1 8080
+```
+
+
+# OLD
 ### Usage
+```
+% ./tarHTTPserver.py
+```
+
 ```
 % ./tarHTTPserver.py -h
 usage: tarHTTPserver.py [-h] [--bind ADDRESS] [port]
@@ -21,16 +60,4 @@ optional arguments:
 % ./tarHTTPserver.py --bind 127.0.0.1 8080
 ```
 
-
-# todo:
-* fix .. button
-* add option to tar '.' and name correctly
-* check if archive is created in memory or streamed
-* add zip, non compressed zip, and gz support
-* make sure memory is not wasted
-* fix symlink hack
-* fix dir listing name in html page
-* add port, bind and dir paramters
-* test, test, test
-* make pip package
 
