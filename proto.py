@@ -32,11 +32,11 @@ class TarHTTPd(SimpleHTTPRequestHandler):
 
     server_version = "SimpleHTTP/" + __version__
 
-    def __init__(self, *args, directory=None, **kwargs):
-        if directory is None:
-            directory = os.getcwd()
-        self.directory = directory
-        super().__init__(*args, **kwargs)
+#    def __init__(self, *args, directory=None, **kwargs):
+#        if directory is None:
+#            directory = os.getcwd()
+#        self.directory = directory
+#        super().__init__(*args, **kwargs)
 
     def do_GET(self):
         """Serve a GET request."""
@@ -49,33 +49,28 @@ class TarHTTPd(SimpleHTTPRequestHandler):
             super().do_GET()
 
     def do_GET_TAR(self):
-        """ send 'virtual' tar file to pipe and copy to socket """
+        """ Server 'virtual' tar file. Pipe to socket. """
 
-        path = self.translate_path(self.path)
-        path = re.sub('\.tar$', '', path)
-        parts = urllib.parse.urlsplit(self.path)
-        print(parts)
+        self.full_tar_name = self.translate_path(self.path)
+        self.out_tar_name = os.path.split(self.full_tar_name)[-1]
+        self.full_chosen_dir = re.sub('\.tar$', '', self.full_tar_name)
 
-        if os.path.isdir(path):
-            print("is_dir:", path)
+        print("self.full_tar_name", self.full_tar_name)
+        print("self.out_tar_name", self.out_tar_name)
+        print("self.full_chosen_dir",self.full_chosen_dir)
+
+        if os.path.isdir(self.full_chosen_dir):
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-type", 'application/x-tar')
-            #self.send_header("Content-Lenght", '56620')
-            self.send_header("Content-Lenght", '620')
-            #self.send_header("Last-Modified", 'Fri, 14 Dec 2018 07:24:02 GMT')
+            #self.send_header("Content-Lenght", '620')
             self.end_headers()
-            sample = '/home/zrth/test/tarHTTPd/test.tar'
-            #f = open(sample,'rb')
-            #print(dir(f))
-            #print(type(f))
-            some_file = '/home/zrth/test/tarHTTPd/README.md'
 
             pr, pw = os.pipe()
-            ppr  = os.fdopen(pr, 'rb')
-            ppw  = os.fdopen(pw, 'wb')
+            ppr = os.fdopen(pr, 'rb')
+            ppw = os.fdopen(pw, 'wb')
 
-            with tarfile.open(name="hooks.tar", mode="w|", fileobj=ppw, encoding='utf-8') as out:
-                out.add(some_file)
+            with tarfile.open(name=self.out_tar_name, mode="w|", fileobj=ppw, encoding='utf-8') as out:
+                out.add(self.full_chosen_dir)
 
             os.close(pw)
             self.copyfile(ppr, self.wfile)
@@ -84,13 +79,8 @@ class TarHTTPd(SimpleHTTPRequestHandler):
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
             return None
-        
-#    def do_HEAD(self):
-#        """Serve a HEAD request."""
-#        f = self.send_head()
-#        if f:
-#            f.close()
-#
+    
+    
     def send_head(self ):
         """Common code for GET and HEAD commands.
 

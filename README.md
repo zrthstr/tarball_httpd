@@ -1,6 +1,17 @@
 # tarHTTPd
 tarHTTPd extends pythons http.server to serve directroys as tarballs without creating the tarball in memory.
 
+# todo:
+make tar function do the requested folder
+fix .. button
+check if archive is created in memory or streamed
+add zip, non compressed zip, and gz support
+make sure memory is not wasted
+fix symlink hack
+fix dir listing name in html page
+add port, bind and dir paramters
+test, test, test
+make pip package
 
 ### who this should look
 ```
