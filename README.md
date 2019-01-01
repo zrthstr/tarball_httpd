@@ -1,7 +1,7 @@
 # tarHTTPd
 tarHTTPd extends pythons http.server to serve directroys as tarballs without creating the tarball in memory.
 
-# as much code as possible has been taken from python3's `org/http/server.py`
+as much code as possible has been taken from python3's `org/http/server.py`
 
 ### Usage
 ```
