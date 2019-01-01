@@ -23,16 +23,21 @@
 `% pip install TarHTTPServer`
 
 ### usage
-`% python -m TarHTTPServer`
+```
+% python -m TarHTTPServer
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+```
 
 ```
 # set port
-% python -m TarHTTPServer 8080
+% python -m TarHTTPServer 12345
+Serving HTTP on 0.0.0.0 port 12345 (http://0.0.0.0:12345/) ...
 ```
 
 ```
 # set bind addr and port
-% python -m TarHTTPServer --bind 127.0.0.1 8080
+% python -m TarHTTPServer --bind 127.0.0.1
+Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...
 ```
 
 
