@@ -3,6 +3,26 @@ tarHTTPd extends pythons http.server to serve directroys as tarballs without cre
 
 # as much code as possible has been taken from python3's `org/http/server.py`
 
+### Usage
+```
+% ./tarHTTPserver.py -h
+usage: tarHTTPserver.py [-h] [--bind ADDRESS] [port]
+
+positional arguments:
+  port                  Specify alternate port [default: 8000]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --bind ADDRESS, -b ADDRESS
+                        Specify alternate bind address [default: all
+                        interfaces]
+```
+
+```
+% ./tarHTTPserver.py --bind 127.0.0.1 8080
+```
+
+
 # todo:
 fix .. button
 add option to tar '.' and name correctly
