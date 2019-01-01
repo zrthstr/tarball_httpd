@@ -191,6 +191,8 @@ class TarHTTPd(SimpleHTTPRequestHandler):
         displaypath = html.escape(displaypath, quote=False)
         enc = sys.getfilesystemencoding()
         title = 'Directory listing for %s' % displaypath
+        li_line = ('<li><a href="%s">%s</a> <a href="%s">'
+                   '<h5 style="display:inline">(tar)</h5></a></li>')
         r.append('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
                  '"http://www.w3.org/TR/html4/strict.dtd">')
         r.append('<html>\n<head>')
@@ -209,7 +211,8 @@ class TarHTTPd(SimpleHTTPRequestHandler):
                 linkname = name + "/"
                 tarname = name + ".tar"
                 tarname_secure = urllib.parse.quote(tarname, errors='surrogatepass') + "?dl=tar"
-                r.append('<li><a href="%s">%s</a> <a href="%s"><h5 style="display:inline">(tar)</h5></a></li>' % (urllib.parse.quote(linkname, errors='surrogatepass'), html.escape(displayname, quote=False), tarname_secure))
+                r.append(li_line % (urllib.parse.quote(linkname, errors='surrogatepass'),
+                                    html.escape(displayname, quote=False), tarname_secure))
 
 #### TODO: figure out what to do with symlinks to files, and symlinks to dirs
 #            if os.path.islink(fullname):
