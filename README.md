@@ -1,6 +1,6 @@
-# tarHTTPd
+# TarHTTPServer
 
-* tarHTTPd extends pythons http.server to serve directroys as tarballs.
+* TarHTTPServer extends pythons http.server to serve directroys as tarballs.
 * the goal is to do this without creating the tarball in memory.
 * as much code as possible has been taken from python3's `org/http/server.py`
 
@@ -20,19 +20,19 @@
 
 # future
 ### install
-`% pip install tarHTTPserver`
+`% pip install TarHTTPServer`
 
 ### usage
-`% python -m tarHTTPserver`
+`% python -m TarHTTPServer`
 
 ```
 # set port
-% python -m tarHTTPserver 8080
+% python -m TarHTTPServer 8080
 ```
 
 ```
 # set bind addr and port
-% python -m tarHTTPserver --bind 127.0.0.1 8080
+% python -m TarHTTPServer --bind 127.0.0.1 8080
 ```
 
 
