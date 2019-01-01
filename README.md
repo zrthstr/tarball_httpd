@@ -5,7 +5,6 @@
 * as much code as possible has been taken from python3's `org/http/server.py`
 
 ### Todo:
-* make this a python module
 * integrate in https://test.pypi.org/
 * more fixing
 * integrate in https://pypi.org/
@@ -18,7 +17,6 @@
 * test, test, test
 * make pip package
 
-# future
 ### install
 `% pip install tarball_httpd`
 
@@ -39,30 +37,4 @@ Serving HTTP on 0.0.0.0 port 12345 (http://0.0.0.0:12345/) ...
 % python -m tarball_httpd --bind 127.0.0.1
 Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...
 ```
-
-
-# OLD
-### Usage
-```
-% ./tarHTTPserver.py
-```
-
-```
-% ./tarHTTPserver.py -h
-usage: tarHTTPserver.py [-h] [--bind ADDRESS] [port]
-
-positional arguments:
-  port                  Specify alternate port [default: 8000]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --bind ADDRESS, -b ADDRESS
-                        Specify alternate bind address [default: all
-                        interfaces]
-```
-
-```
-% ./tarHTTPserver.py --bind 127.0.0.1 8080
-```
-
 
