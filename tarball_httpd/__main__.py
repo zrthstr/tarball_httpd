@@ -239,8 +239,7 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         return f
 
 
-
-if __name__ == "__main__":
+def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--bind', '-b', default='', metavar='ADDRESS',
@@ -257,3 +256,8 @@ if __name__ == "__main__":
 
     handler_class = partial(TarHTTPServer, directory=args.directory)
     test(HandlerClass=handler_class, port=args.port, bind=args.bind)
+
+
+if __name__ == "__main__":
+    main()
+

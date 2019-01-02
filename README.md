@@ -10,6 +10,7 @@
 
 ### general:
 * integrate in https://test.pypi.org/
+* clean up __init__.py
 * more fixing
 * integrate in https://pypi.org/
 * add option to tar '.' and name correctly
@@ -21,10 +22,18 @@
 * test, test, test
 * make pip package
 
-### install
+## git clone and use
+```
+git clone https://github.com/zrthstr/tarball_httpd
+cd tarball_httpd
+./tarball_httpd.py -d /tmp
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ..
+```
+
+## install & use
 `% pip install tarball_httpd`
 
-### usage
+## usage
 ```
 % python -m tarball_httpd
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
