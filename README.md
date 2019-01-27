@@ -1,5 +1,5 @@
 # tarball_httpd
-Server directories as tarball archive for download over http
+Serves directories as tarball archive for download over http
 
 * tarball_httpd extends pythons http.server to serve directroys as tarballs.
 * the goal is to do this without creating the tarball in memory.
