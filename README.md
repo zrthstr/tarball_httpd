@@ -28,7 +28,10 @@ Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ..
 ```
 
 ## install
-`% pip install tarball_httpd`
+```
+# nope not yet.. git clone..
+# % pip install tarball_httpd
+```
 
 ## usage
 ```
