@@ -36,6 +36,9 @@ from functools import partial
 ### test
 import threading
 
+## debug
+import time
+
 from http.server import test as test
 from http import HTTPStatus
 
@@ -65,14 +68,20 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         else:
             super().do_GET()
 
-    def foo(self, n, p, d):
-            print("INFFFFFf")
-            XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512)
-            print("INFFFF mid")
+    def foo_old(self, n, p, d):
+            XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8')
+            #XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512)
             XXX.add(d)
-            print("INFFFF end")
+            time.sleep(1)
             p.close()
-            print("INFFF clsed")
+
+    def foo(self, n, p, d):
+            with tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512) as XXX:
+                #XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512)
+                XXX.add(d)
+                #time.sleep(1)
+            p.close()
+
 
     def do_TAR(self):
         """ Server 'virtual' tar file. Pipe to socket. """
@@ -91,13 +100,11 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
             fh_r, fh_w = os.pipe()
             import time
             #time.sleep(1)
-            print(">>>>>>>>>> A")
 
             pipe_r = os.fdopen(fh_r, 'rb')
             pipe_w = os.fdopen(fh_w, 'wb')
             
             #time.sleep(1)
-            print(">>>>>>>>>> B")
 
 
             """
@@ -110,16 +117,14 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
             """
 
             ##foo(self.out_tar_name, pipe_w, self.full_chosen_dir)
-            time.sleep(0.5) 
+            time.sleep(1) 
             threading.Thread(target=self.foo, args=(self.out_tar_name, pipe_w, self.full_chosen_dir,), daemon=True ).start() 
 
-            print(">>>>>>>>>> C")
+            time.sleep(1)
             self.copyfile(pipe_r, self.wfile)
-            print(">>>>>>>>>> D")
+            time.sleep(1)
             os.close(fh_r)
-            print(">>>>>>>>>> E")
             #os.close(fh_w)
-            print(">>>>>>>>>> F")
 
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
@@ -231,8 +236,8 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         #title = 'Directory listing for %s <a href=> (tar)' % displaypath
 
         cwd_path = '../' + displaypath.replace('/','') + '.tar'
-        print("PPPPP:",path)
-        print("cwd_path:", cwd_path)
+        ##print("PPPPP:",path)
+        ##print("cwd_path:", cwd_path)
         
 
         title = 'Directory listing for %s <a href=%s?dl=tar><h6 style="display:inline">(tar)</h6></a>' % (displaypath, cwd_path)
