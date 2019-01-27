@@ -59,6 +59,11 @@ optional arguments:
                         directory
 ```
 
+## testing
+```
+./tests/test.sh 
+```
+
 ## debugging
 ```
 curl 'http://localhost:12345/testin/testdir.tar?dl=tar' -vvvv --output - 
