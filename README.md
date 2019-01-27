@@ -8,14 +8,11 @@
 * make tar paths rellative
 * make sure tar paramertes cant be manipulated to do funny things
 * make sure not XSS and so on are possible
-* clean up __init__.py
-* more fixing
 * add option to tar '.' and name correctly
 * check if archive is created in memory or streamed
 * add more supported archive files: zip, non compressed zip, gz/gz2
 * fix symlink hack
 * fix dir listing name in html page
-* add dir paramters,  test this
 * test, test, test
 * move from demo.pypi to prod
 * add banner
@@ -28,7 +25,7 @@ cd tarball_httpd
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ..
 ```
 
-## install & use
+## install
 `% pip install tarball_httpd`
 
 ## usage
