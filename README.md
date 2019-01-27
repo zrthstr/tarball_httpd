@@ -5,22 +5,20 @@
 * as much code as possible has been taken from python3's `org/http/server.py`
 
 ## Todo:
-### fix bug:
-*sometimes DL hangs. Is this a race condition between the pipe beeing closed and the filecopy??
-
-### general:
-* integrate in https://test.pypi.org/
+* make tar paths rellative
+* make sure tar paramertes cant be manipulated to do funny things
+* make sure not XSS and so on are possible
 * clean up __init__.py
 * more fixing
-* integrate in https://pypi.org/
 * add option to tar '.' and name correctly
 * check if archive is created in memory or streamed
 * add more supported archive files: zip, non compressed zip, gz/gz2
 * fix symlink hack
 * fix dir listing name in html page
-* add dir paramters
+* add dir paramters,  test this
 * test, test, test
-* make pip package
+* move from demo.pypi to prod
+* add banner
 
 ## git clone and use
 ```
@@ -61,3 +59,17 @@ optional arguments:
                         directory
 ```
 
+## testing
+```
+./tests/test.sh 
+```
+
+## debugging
+```
+curl 'http://localhost:12345/testin/testdir.tar?dl=tar' -vvvv --output - 
+
+sudo tcpdump -nnSX -i lo port 12345 -XX
+
+alias cu='curl "http://localhost:12345/testin/testdir.tar?dl=tar" -vvvv --output -'
+for 1 in range $(seq 1 100); do cu ; sleep 1 ; done
+```

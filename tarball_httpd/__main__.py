@@ -24,7 +24,9 @@ XXX To do:
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import re
 import tarfile
+import argparse
 import datetime
+import threading
 import email.utils
 import html
 import io
@@ -55,7 +57,6 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         """Serve a GET request."""
-
         args = urllib.parse.urlparse(self.requestline).query
         if "dl=tar" in args:
             self.do_TAR()
@@ -63,8 +64,15 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
             super().do_GET()
 
 
+    def tar_pipe_feed(self, name, pipe, directory):
+            with tarfile.open(name=name, mode="w|", fileobj=pipe,
+                              encoding='utf-8', bufsize=20 * 512) as tar:
+                tar.add(directory)
+            pipe.close()
+
+
     def do_TAR(self):
-        """ Server 'virtual' tar file. Pipe to socket. """
+        """ Serve dir as tar. Pipe files to socket. """
 
         self.full_tar_name = self.translate_path(self.path)
         self.out_tar_name = os.path.split(self.full_tar_name)[-1]
@@ -73,24 +81,17 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         if os.path.isdir(self.full_chosen_dir):
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-type", 'application/x-tar')
-            #self.send_header("Content-Lenght", '620')
             self.end_headers()
-
             fh_r, fh_w = os.pipe()
             pipe_r = os.fdopen(fh_r, 'rb')
             pipe_w = os.fdopen(fh_w, 'wb')
-
-            with tarfile.open(name=self.out_tar_name, mode="w|",
-                              fileobj=pipe_w, encoding='utf-8') as out:
-                out.add(self.full_chosen_dir)
-
-            os.close(fh_w)
+            threading.Thread(target=self.tar_pipe_feed,
+                             args=(self.out_tar_name, pipe_w, self.full_chosen_dir),
+                             daemon=True ).start() 
             self.copyfile(pipe_r, self.wfile)
             os.close(fh_r)
-
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
-            #return None
 
 
     def send_head(self):
@@ -195,7 +196,14 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
             displaypath = urllib.parse.unquote(path)
         displaypath = html.escape(displaypath, quote=False)
         enc = sys.getfilesystemencoding()
-        title = 'Directory listing for %s' % displaypath
+        #title = 'Directory listing for %s <a href=> (tar)' % displaypath
+
+        cwd_path = '../' + displaypath.replace('/','') + '.tar'
+        ##print("PPPPP:",path)
+        ##print("cwd_path:", cwd_path)
+        
+
+        title = 'Directory listing for %s <a href=%s?dl=tar><h6 style="display:inline">(tar)</h6></a>' % (displaypath, cwd_path)
         li_line = ('<li><a href="%s">%s</a> <a href="%s">'
                    '<h5 style="display:inline">(tar)</h5></a></li>')
         r.append('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
@@ -241,7 +249,6 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
 
 def main():
-    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--bind', '-b', default='', metavar='ADDRESS',
                         help='Specify alternate bind address '
