@@ -5,10 +5,6 @@
 * as much code as possible has been taken from python3's `org/http/server.py`
 
 ## Todo:
-### fix bug:
-*sometimes DL hangs. Is this a race condition between the pipe beeing closed and the filecopy??
-
-### general:
 * make tar paths rellative
 * make sure tar paramertes cant be manipulated to do funny things
 * make sure not XSS and so on are possible
