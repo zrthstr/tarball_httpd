@@ -25,6 +25,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import re
 import tarfile
 import datetime
+import threading
 import email.utils
 import html
 import io
@@ -32,12 +33,6 @@ import os
 import sys
 import urllib.parse
 from functools import partial
-
-### test
-import threading
-
-## debug
-import time
 
 from http.server import test as test
 from http import HTTPStatus
@@ -68,18 +63,9 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         else:
             super().do_GET()
 
-    def foo_old(self, n, p, d):
-            XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8')
-            #XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512)
-            XXX.add(d)
-            time.sleep(1)
-            p.close()
-
-    def foo(self, n, p, d):
+    def tar_pipe_feed(self, n, p, d):
             with tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512) as XXX:
-                #XXX = tarfile.open(name=n, mode="w|", fileobj=p, encoding='utf-8', bufsize=20 * 512)
                 XXX.add(d)
-                #time.sleep(1)
             p.close()
 
 
@@ -93,42 +79,19 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         if os.path.isdir(self.full_chosen_dir):
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-type", 'application/x-tar')
-            #self.send_header("Content-Lenght", '620')
             self.end_headers()
-
-            #fh_r, fh_w = os.pipe2(os.O_NONBLOCK)
             fh_r, fh_w = os.pipe()
-            import time
-            #time.sleep(1)
 
             pipe_r = os.fdopen(fh_r, 'rb')
             pipe_w = os.fdopen(fh_w, 'wb')
             
-            #time.sleep(1)
 
-
-            """
-            with tarfile.open(name=self.out_tar_name, mode="w|",
-                              fileobj=pipe_w, encoding='utf-8', bufsize=20 * 512) as out:
-                print(">>>>>>>>>> B1")
-                print("self.full_chosen_dir:", self.full_chosen_dir)
-                out.add(self.full_chosen_dir)
-                print(">>>>>>>>>> B2")
-            """
-
-            ##foo(self.out_tar_name, pipe_w, self.full_chosen_dir)
-            time.sleep(1) 
-            threading.Thread(target=self.foo, args=(self.out_tar_name, pipe_w, self.full_chosen_dir,), daemon=True ).start() 
-
-            time.sleep(1)
+            threading.Thread(target=self.tar_pipe_feed, args=(self.out_tar_name, pipe_w, self.full_chosen_dir,), daemon=True ).start() 
             self.copyfile(pipe_r, self.wfile)
-            time.sleep(1)
             os.close(fh_r)
-            #os.close(fh_w)
 
         else:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found (tar)")
-            #return None
 
 
     def send_head(self):
