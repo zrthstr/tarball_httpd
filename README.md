@@ -8,8 +8,8 @@ Server directories as tarball archive for download over http
 ## Todo:
 * make tar paths rellative
 * add screenshot to readme
-* make sure tar paramertes cant be manipulated to do funny things
-* make sure not XSS and so on are possible
+* make paramertes cant be manipulated to do funny things
+* doublecheck XSS and so on are possible
 * add option to tar '.' and name correctly
 * check if archive is created in memory or streamed
 * add more supported archive files: zip, non compressed zip, gz/gz2
