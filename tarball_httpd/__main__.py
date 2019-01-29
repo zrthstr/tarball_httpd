@@ -199,11 +199,9 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         #title = 'Directory listing for %s <a href=> (tar)' % displaypath
 
         cwd_path = '../' + displaypath.replace('/','') + '.tar'
-        ##print("PPPPP:",path)
-        ##print("cwd_path:", cwd_path)
-        
 
-        title = 'Directory listing for %s <a href=%s?dl=tar><h6 style="display:inline">(tar)</h6></a>' % (displaypath, cwd_path)
+        title = ('Directory listing for %s <a href=%s?dl=tar>'
+                 '<h6 style="display:inline">(tar)</h6></a>') % (displaypath, cwd_path)
         li_line = ('<li><a href="%s">%s</a> <a href="%s">'
                    '<h5 style="display:inline">(tar)</h5></a></li>')
         r.append('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
@@ -215,25 +213,23 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         r.append('<body>\n<h1>%s</h1>' % title)
         r.append('<hr>\n<ul>')
 
-        for name in list:
-            fullname = os.path.join(path, name)
-            displayname = linkname = name
+        for displayname in list:
+            fullname = os.path.join(path, displayname)
             # Append / for directories or @ for symbolic links
             if os.path.isdir(fullname):
-                displayname = name + "/"
-                linkname = name + "/"
-                tarname = name + ".tar"
+                displayname += "/"
+                tarname = displayname + ".tar"
                 tarname_secure = urllib.parse.quote(tarname, errors='surrogatepass') + "?dl=tar"
-                r.append(li_line % (urllib.parse.quote(linkname, errors='surrogatepass'),
+                r.append(li_line % (urllib.parse.quote(displayname, errors='surrogatepass'),
                                     html.escape(displayname, quote=False), tarname_secure))
 
-#### TODO: figure out what to do with symlinks to files, and symlinks to dirs
-#            if os.path.islink(fullname):
-#                displayname = name + "@"
-#                # Note: a link to a directory displays with @ and links with /
+            #if os.path.islink(fullname):
+            #    displayname = name + "@"
+                # Note: a link to a directory displays with @ and links with /
+
             else:
                 r.append('<li><a href="%s">%s</a></li>' %
-                         (urllib.parse.quote(linkname, errors='surrogatepass'),
+                         (urllib.parse.quote(displayname, errors='surrogatepass'),
                           html.escape(displayname, quote=False)))
 
         r.append('</ul>\n<hr>\n</body>\n</html>\n')
