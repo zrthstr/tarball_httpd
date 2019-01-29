@@ -40,6 +40,7 @@ from http import HTTPStatus
 
 __version__ = "0.1"
 
+
 class TarHTTPServer(SimpleHTTPRequestHandler):
 
     """Tar HTTP request handler with GET and HEAD commands.
@@ -53,7 +54,7 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
     """
 
-    server_version = "SimpleHTTP/" + __version__
+    server_version = "tarball_HTTPd/" + __version__
 
     def do_GET(self):
         """Serve a GET request."""
@@ -67,7 +68,9 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
     def tar_pipe_feed(self, name, pipe, directory):
             with tarfile.open(name=name, mode="w|", fileobj=pipe,
                               encoding='utf-8', bufsize=20 * 512) as tar:
-                tar.add(directory)
+                print("XXXXXXXXx", directory)
+                #tar.add(directory, arcname=name)
+                tar.add(directory, arcname=os.path.basename(os.path.normpath(directory)))
             pipe.close()
 
 
@@ -139,7 +142,6 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
             fullname = os.path.join(path, displayname)
             # Append / for directories or @ for symbolic links
             if os.path.isdir(fullname):
-                displayname += "/"
                 tarname = displayname + ".tar"
                 tarname_secure = urllib.parse.quote(tarname, errors='surrogatepass') + "?dl=tar"
                 r.append(li_line % (urllib.parse.quote(displayname, errors='surrogatepass'),
@@ -154,7 +156,8 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
                          (urllib.parse.quote(displayname, errors='surrogatepass'),
                           html.escape(displayname, quote=False)))
 
-        r.append('</ul>\n<hr>\n</body>\n</html>\n')
+        banner = '<p><em><font color=#484848>{}</font></a></em></p>'.format(self.server_version)
+        r.append('</ul>\n<hr>\n{}\n</body>\n</html>\n'.format(banner))
         encoded = '\n'.join(r).encode(enc, 'surrogateescape')
         f = io.BytesIO()
         f.write(encoded)

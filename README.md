@@ -7,17 +7,14 @@ Serves directories as tarball archive for download over http
 
 ## Todo:
 * make tar paths rellative
-* add screenshot to readme
+* add screenshot for readme 
+* add github page
 * make paramertes cant be manipulated to do funny things
 * doublecheck XSS and so on are possible
-* add option to tar '.' and name correctly
 * check if archive is created in memory or streamed
 * add more supported archive files: zip, non compressed zip, gz/gz2
-* fix symlink hack
-* fix dir listing name in html page
-* test, test, test
 * move from demo.pypi to prod
-* add banner
+* test other platforms than linux
 
 ## git clone and use
 ```
