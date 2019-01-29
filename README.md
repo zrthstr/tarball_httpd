@@ -32,6 +32,8 @@ Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ..
 
 ## usage
 ```
+% ./tarball_httpd.py 
+# or
 % python -m tarball_httpd
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 ```
