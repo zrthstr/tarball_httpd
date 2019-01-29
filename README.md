@@ -1,7 +1,7 @@
 # tarball_httpd
-Serves directories as tarball archive for download over http
+Serves directories as .TARs (tarball archive) over http - so they can be downloaded with a web browser
 
-* tarball_httpd extends pythons http.server to serve directroys as tarballs.
+* tarball_httpd extends pythons http.server/SimpleHTTPServer to serve directroys as tarballs.
 * the goal is to do this without creating the tarball in memory.
 * as much code as possible has been taken from python3's `org/http/server.py`
 
