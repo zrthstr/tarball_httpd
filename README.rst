@@ -67,10 +67,11 @@ Testing
 
 License
 -------
-This project is licensed under the PSF License - see the LICENSE_ file for details
-.. _`LICENSE`: ./LICENSE
+This project is licensed under the PSF License - see the `LICENSE <./LICENSE>`_  file for details
+
 
 Authors and Acknowledgments
 ---------------------------
-tarball_httpd was written by zrth1k@gmail.com
 Largs parts of its code are based on or copied from python3/lib/http/server
+
+tarball_httpd was written by zrth1k@gmail.com
