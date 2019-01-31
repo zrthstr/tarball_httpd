@@ -35,7 +35,7 @@ Serves directories as .TARs (tarball archives) over http - for them to be downlo
 
 ## Usage without installation
     % git clone git@github.com:zrthstr/tarball_httpd.git
-    % cd tarball_httpd.py
+    % cd tarball_httpd
     % ./tarball_httpd.py
       Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 
