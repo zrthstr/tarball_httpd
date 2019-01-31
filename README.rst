@@ -65,14 +65,12 @@ Testing
     % ./tests/test.sh
       ....
 
-Authors
--------
-zrth1k@gmail.com
-
 License
 -------
-This project is licensed under the PSF License - see the `LICENSE <./LICENSE>` file for details
+This project is licensed under the PSF License - see the LICENSE_ file for details
+.. _`LICENSE`: ./LICENSE
 
-Acknowledgments
----------------
-Largs parts of code are based on or copied from python3/lib/http/server
+Authors and Acknowledgments
+---------------------------
+tarball_httpd was written by zrth1k@gmail.com
+Largs parts of its code are based on or copied from python3/lib/http/server
