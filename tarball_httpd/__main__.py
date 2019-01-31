@@ -68,8 +68,6 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
     def tar_pipe_feed(self, name, pipe, directory):
             with tarfile.open(name=name, mode="w|", fileobj=pipe,
                               encoding='utf-8', bufsize=20 * 512) as tar:
-                print("XXXXXXXXx", directory)
-                #tar.add(directory, arcname=name)
                 tar.add(directory, arcname=os.path.basename(os.path.normpath(directory)))
             pipe.close()
 
