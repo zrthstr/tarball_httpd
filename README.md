@@ -6,7 +6,7 @@ Serves directories as .TARs (tarball archives) over http - for them to be downlo
 * as much code as possible has been borrowed from python3's http.server
 
 ## Todo
-* doublecheck XSS, lfi and so on are not possible
+* doublecheck XSS, LFI, directory traversal and so on are not possible
 * add more supported archive files: zip, non compressed zip, gz/gz2, .. ?
 * test on bsd, mac and windows
 
