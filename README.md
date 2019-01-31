@@ -15,30 +15,30 @@ Serves directories as .TARs (tarball archives) over http - for them to be downlo
 
 ## Usage
     % python -m tarball_httpd
-    Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+      Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
      
     % python -m tarball_httpd 12345 --bind 127.0.0.1 --directory /tmp
-    Serving HTTP on 127.0.0.1 port 12345 (http://127.0.0.1:12345/) ..
+      Serving HTTP on 127.0.0.1 port 12345 (http://127.0.0.1:12345/) ..
  
     % python -m tarball_httpd -h                               
-    usage: tarball_httpd.py [-h] [--bind ADDRESS] [--directory DIRECTORY] [port]
+      usage: tarball_httpd.py [-h] [--bind ADDRESS] [--directory DIRECTORY] [port]
  
-    positional arguments:
-      port                  Specify alternate port [default: 8000]
+      positional arguments:
+        port                  Specify alternate port [default: 8000]
     
-    optional arguments:
-      -h, --help            show this help message and exit
-      --bind ADDRESS, -b ADDRESS
+      optional arguments:
+        -h, --help            show this help message and exit
+        --bind ADDRESS, -b ADDRESS
                             Specify alternate bind address [default: all interfaces]
-      --directory DIRECTORY, -d DIRECTORY
+        --directory DIRECTORY, -d DIRECTORY
                             Specify alternative directory [default:current directory]
 
-## Uage without installation
+## Usage without installation
     % git clone git@github.com:zrthstr/tarball_httpd.git
     % cd tarball_httpd.py
     % ./tarball_httpd.py
-        Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+      Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 
 ## Testing
     % ./tests/test.sh
-        ....
+      ....
