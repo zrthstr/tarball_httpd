@@ -71,7 +71,7 @@ zrth1k@gmail.com
 
 License
 -------
-PSF
+This project is licensed under the PSF License - see the `LICENSE <https://github.com/zrthstr/tarball_httpd/blob/rst/LICENSE>` file for details
 
 Acknowledgments
 ---------------
