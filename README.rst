@@ -1,4 +1,4 @@
-tarball\_httpd
+tarball_httpd
 ==============
 
 Serves directories as .TARs (tarball archives) over http - to be downloaded by a web browser
@@ -12,7 +12,7 @@ Serves directories as .TARs (tarball archives) over http - to be downloaded by a
 Todo
 ----
 
--  doublecheck XSS, LFI, directory traversal and so on are not possible
+-  doublecheck for XSS, LFI, directory traversal vulnerabilities
 -  add more supported archive files: zip, non compressed zip, gz/gz2, ..
 -  test on bsd, mac and windows
 
