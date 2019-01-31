@@ -4,7 +4,9 @@ rm -rf dist/tarball*
 
 python3 setup.py sdist bdist_wheel
 
-twine upload --repository testpypi dist/*
+twine upload --repository pypi dist/*
+
+#twine upload --repository testpypi dist/*
 
 # cd 
 # sudo python3 -m pip uninstall tarball_httpd
