@@ -10,7 +10,6 @@ http.server is the origin to much of this code.
 
 
 XXX To do:
-
 - add tests
 - more testing
 - more logging
@@ -21,13 +20,10 @@ XXX To do:
 """
 
 
-from http.server import HTTPServer, SimpleHTTPRequestHandler
 import re
 import tarfile
 import argparse
-import datetime
 import threading
-import email.utils
 import html
 import io
 import os
@@ -35,14 +31,13 @@ import sys
 import urllib.parse
 from functools import partial
 
-from http.server import test as test
+from http.server import SimpleHTTPRequestHandler, test
 from http import HTTPStatus
 
-__version__ = "0.0.8"
+__version__ = "0.0.10"
 
 
 class TarHTTPServer(SimpleHTTPRequestHandler):
-
     """Tar HTTP request handler with GET and HEAD commands.
 
     This serves dircetorys as tars and files from the current directory and any of its
@@ -56,8 +51,10 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
     server_version = "tarball_HTTPd/" + __version__
 
+
     def do_GET(self):
         """Serve a GET request."""
+
         args = urllib.parse.urlparse(self.requestline).query
         if "dl=tar" in args:
             self.do_TAR()
@@ -66,18 +63,29 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
 
     def tar_pipe_feed(self, name, pipe, directory):
-            with tarfile.open(name=name, mode="w|", fileobj=pipe,
-                              encoding='utf-8', bufsize=20 * 512) as tar:
-                tar.add(directory, arcname=os.path.basename(os.path.normpath(directory)))
-            pipe.close()
+        """ Tar Thread.
+
+        Adds all files from directory to tarobj.
+        Writes tarobj to pipe.
+        Closes pipe when read is done and exists thread.
+        """
+        with tarfile.open(name=name, mode="w|", fileobj=pipe,
+                          encoding='utf-8', bufsize=20 * 512) as tar:
+            tar.add(directory, arcname=os.path.basename(os.path.normpath(directory)))
+        pipe.close()
 
 
     def do_TAR(self):
-        """ Serve dir as tar. Pipe files to socket. """
+        """ Takes care of HTTP things related to serving a tar
+
+        Sends correct Content-type.
+        Starts tar_pipe_feed thread.
+        Takes care of file copying.
+        """
 
         self.full_tar_name = self.translate_path(self.path)
         self.out_tar_name = os.path.split(self.full_tar_name)[-1]
-        self.full_chosen_dir = re.sub('\.tar$', '', self.full_tar_name)
+        self.full_chosen_dir = re.sub(r'\.tar$', '', self.full_tar_name)
 
         if os.path.isdir(self.full_chosen_dir):
             self.send_response(HTTPStatus.OK)
@@ -88,7 +96,7 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
             pipe_w = os.fdopen(fh_w, 'wb')
             threading.Thread(target=self.tar_pipe_feed,
                              args=(self.out_tar_name, pipe_w, self.full_chosen_dir),
-                             daemon=True ).start() 
+                             daemon=True).start()
             self.copyfile(pipe_r, self.wfile)
             os.close(fh_r)
         else:
@@ -104,13 +112,13 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
         """
         try:
-            list = os.listdir(path)
+            dlist = os.listdir(path)
         except OSError:
             self.send_error(
                 HTTPStatus.NOT_FOUND,
                 "No permission to list directory")
             return None
-        list.sort(key=lambda a: a.lower())
+        dlist.sort(key=lambda a: a.lower())
         r = []
         try:
             displaypath = urllib.parse.unquote(self.path,
@@ -121,7 +129,7 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         enc = sys.getfilesystemencoding()
         #title = 'Directory listing for %s <a href=> (tar)' % displaypath
 
-        cwd_path = '../' + displaypath.replace('/','') + '.tar'
+        cwd_path = '../' + displaypath.replace('/', '') + '.tar'
 
         title = ('Directory listing for %s <a href=%s?dl=tar>'
                  '<h6 style="display:inline">(tar)</h6></a>') % (displaypath, cwd_path)
@@ -136,7 +144,7 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
         r.append('<body>\n<h1>%s</h1>' % title)
         r.append('<hr>\n<ul>')
 
-        for displayname in list:
+        for displayname in dlist:
             fullname = os.path.join(path, displayname)
             # Append / for directories or @ for symbolic links
             if os.path.isdir(fullname):
@@ -168,16 +176,14 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 
 
 def main():
+    """ Parse args and call TarHTTPServer."""
     parser = argparse.ArgumentParser()
     parser.add_argument('--bind', '-b', default='', metavar='ADDRESS',
-                        help='Specify alternate bind address '
-                             '[default: all interfaces]')
+                        help='Specify alternate bind address [default: all interfaces]')
     parser.add_argument('--directory', '-d', default=os.getcwd(),
-                        help='Specify alternative directory '
-                        '[default:current directory]')
+                        help='Specify alternative directory [default:current directory]')
     parser.add_argument('port', action='store',
-                        default=8000, type=int,
-                        nargs='?',
+                        default=8000, type=int, nargs='?',
                         help='Specify alternate port [default: 8000]')
     args = parser.parse_args()
 
@@ -187,4 +193,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -63,11 +63,10 @@ Testing
 ::
 
     % ./tests/test.sh
-      ....
 
 License
 -------
-This project is licensed under the PSF License - see the `LICENSE <./LICENSE>`_  file for details
+This project is licensed under the PSF License - see the `LICENSE <./LICENSE>`_ file for details
 
 
 Authors and Acknowledgments
