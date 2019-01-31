@@ -38,7 +38,7 @@ from functools import partial
 from http.server import test as test
 from http import HTTPStatus
 
-__version__ = "0.1"
+__version__ = "0.0.2"
 
 
 class TarHTTPServer(SimpleHTTPRequestHandler):
