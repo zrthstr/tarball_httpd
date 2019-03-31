@@ -45,11 +45,13 @@ function fetch_and_check {
     file testout/testin.tar || exit 1
     md5sum testout/testin.tar || exit 1
     tar --list --verbose --file=testout/testin.tar || exit 1
+    echo ">>> Ok. All tests passed"
 }
 
 function cleanup {
     echo ">>> Cleaning up output dir"
-    rm testout/*
+    rm -rf testin
+    rm -rf testout
 }
 
 function stop_server {
