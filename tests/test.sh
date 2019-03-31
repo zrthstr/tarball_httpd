@@ -32,11 +32,6 @@ function start_server {
     return $PORT
 }
 
-function stop_server {
-    echo ">>> Killing Server"
-    kill $SERVER_PID
-}
-
 function fetch_and_check {
     echo ">>> Fetching index.html"
     curl $URL -o testout/index.html -sS || exit 1
@@ -59,7 +54,13 @@ function cleanup {
     rm testout/*
 }
 
+function stop_server {
+    echo ">>> Killing Server"
+    kill $SERVER_PID
+}
 
+echo $PWD
+pwd
 # change WD to scripts location
 cd "$(dirname "$0")"
 
