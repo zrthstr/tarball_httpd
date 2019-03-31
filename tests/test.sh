@@ -35,9 +35,9 @@ function prepare_testdata {
     echo ">>> Preparing testdata"
     [[ -d 'testin' ]] || mkdir testin
     [[ -d 'testout' ]] || mkdir testout
-    dd if=/dev/zero of=testin/testdir/1M bs=1M count=1 status=none
-    dd if=/dev/zero of=testin/10M bs=1M count=10 status=none
-    dd if=/dev/zero of=testin/100M bs=1M count=100 status=none
+    dd if=/dev/zero of=testin/testdir/1M bs=1M count=1 status=none || exit 1
+    dd if=/dev/zero of=testin/10M bs=1M count=10 status=none || exit 1 
+    dd if=/dev/zero of=testin/100M bs=1M count=100 status=none || exit 1
 }
 
 function fetch_and_check {
