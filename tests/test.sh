@@ -12,13 +12,6 @@ function prepare_testdata {
     [[ -d 'testin' ]] || mkdir testin
     [[ -d 'testin/testdir' ]] || mkdir testin/testdir
     [[ -d 'testout' ]] || mkdir testout
-    ls testin || exit 1 
-    ls testout || exit 1
-
-    echo "Debug1:"
-    pwd
-    ls
-
     dd if=/dev/zero of=testin/testdir/1M bs=1M count=1 status=none || exit 1
     dd if=/dev/zero of=testin/10M bs=1M count=10 status=none || exit 1 
     dd if=/dev/zero of=testin/100M bs=1M count=100 status=none || exit 1
@@ -54,7 +47,6 @@ function fetch_and_check {
     tar --list --verbose --file=testout/testin.tar || exit 1
 }
 
-
 function cleanup {
     echo ">>> Cleaning up output dir"
     rm testout/*
@@ -65,13 +57,9 @@ function stop_server {
     kill $SERVER_PID
 }
 
+
 # change WD to scripts location
 cd "$(dirname "$0")"
-
-echo "DEBUG:"
-echo $PWD
-pwd
-
 
 prepare_testdata
 start_server
