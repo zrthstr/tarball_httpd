@@ -10,6 +10,7 @@ URL=http://${HOST}:${PORT}
 function prepare_testdata {
     echo ">>> Preparing testdata"
     [[ -d 'testin' ]] || mkdir testin
+    [[ -d 'testin/testdir' ]] || mkdir testin/testdir
     [[ -d 'testout' ]] || mkdir testout
     ls testin || exit 1 
     ls testout || exit 1
