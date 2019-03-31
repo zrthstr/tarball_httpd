@@ -7,6 +7,17 @@ PORT=12345
 HOST=127.0.0.1
 URL=http://${HOST}:${PORT}
 
+function prepare_testdata {
+    echo ">>> Preparing testdata"
+    [[ -d 'testin' ]] || mkdir testin
+    [[ -d 'testout' ]] || mkdir testout
+    ls testin || exit 1 
+    ls testout || exit 1
+    dd if=/dev/zero of=testin/testdir/1M bs=1M count=1 status=none || exit 1
+    dd if=/dev/zero of=testin/10M bs=1M count=10 status=none || exit 1 
+    dd if=/dev/zero of=testin/100M bs=1M count=100 status=none || exit 1
+}
+
 function start_server {
     pkill -f "python ../tarball_httpd.py ${PORT}"
     if [[ $? -eq 0 ]]; then
@@ -26,20 +37,6 @@ function stop_server {
     kill $SERVER_PID
 }
 
-function cleanup {
-    echo ">>> Cleaning up output dir"
-    rm testout/*
-}
-
-function prepare_testdata {
-    echo ">>> Preparing testdata"
-    [[ -d 'testin' ]] || mkdir testin
-    [[ -d 'testout' ]] || mkdir testout
-    dd if=/dev/zero of=testin/testdir/1M bs=1M count=1 status=none || exit 1
-    dd if=/dev/zero of=testin/10M bs=1M count=10 status=none || exit 1 
-    dd if=/dev/zero of=testin/100M bs=1M count=100 status=none || exit 1
-}
-
 function fetch_and_check {
     echo ">>> Fetching index.html"
     curl $URL -o testout/index.html -sS || exit 1
@@ -54,6 +51,12 @@ function fetch_and_check {
     file testout/testin.tar || exit 1
     md5sum testout/testin.tar || exit 1
     tar --list --verbose --file=testout/testin.tar || exit 1
+}
+
+
+function cleanup {
+    echo ">>> Cleaning up output dir"
+    rm testout/*
 }
 
 
