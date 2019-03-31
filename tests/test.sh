@@ -42,18 +42,18 @@ function prepare_testdata {
 
 function fetch_and_check {
     echo ">>> Fetching index.html"
-    curl $URL -o testout/index.html -sS
+    curl $URL -o testout/index.html -sS || exit 1
     echo ">>> Checking index.html"
-    ls -alh testout/index.html
-    file testout/index.html
-    md5sum testout/index.html
+    ls -alh testout/index.html || exit 1
+    file testout/index.html || exit 1 
+    md5sum testout/index.html || exit 1
     echo ">>> Fetching testout/testin.tar"
-    curl "$URL/testin.tar?dl=tar" -o testout/testin.tar -sS
+    curl "$URL/testin.tar?dl=tar" -o testout/testin.tar -sS || exit 1
     echo ">>> Checking testout/testin.tar"
-    ls -alh testout/testin.tar
-    file testout/testin.tar
-    md5sum testout/testin.tar
-    tar --list --verbose --file=testout/testin.tar
+    ls -alh testout/testin.tar || exit 1
+    file testout/testin.tar || exit 1
+    md5sum testout/testin.tar || exit 1
+    tar --list --verbose --file=testout/testin.tar || exit 1
 }
 
 
