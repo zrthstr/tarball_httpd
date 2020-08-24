@@ -178,7 +178,7 @@ class TarHTTPServer(SimpleHTTPRequestHandler):
 def main():
     """ Parse args and call TarHTTPServer."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('--bind', '-b', default='', metavar='ADDRESS',
+    parser.add_argument('--bind', '-b', metavar='ADDRESS',
                         help='Specify alternate bind address [default: all interfaces]')
     parser.add_argument('--directory', '-d', default=os.getcwd(),
                         help='Specify alternative directory [default:current directory]')

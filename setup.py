@@ -10,7 +10,7 @@ setuptools.setup(
     description='Simple http server, streaming directories as tarballs.',
     author='zrthstr',
     author_email='zrth1k@gmail.com',
-    url='https://github.com/zrth1k/tarball_httpd',
+    url='https://github.com/zrthstr/tarball_httpd',
     packages=setuptools.find_packages(),
     license='PSFL',
     long_description=long_description,
